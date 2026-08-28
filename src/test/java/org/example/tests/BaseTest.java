@@ -3,8 +3,10 @@ package org.example.tests;
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.File;
 import java.nio.file.Paths;
 
 @ExtendWith(ScreenshotOnFailureExtension.class)
@@ -18,8 +20,9 @@ public abstract class BaseTest {
     @BeforeEach
     public void setUp() {
         playwright = Playwright.create();
+        boolean headless = Boolean.parseBoolean(System.getProperty("headless", "false"));
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(true)
+                new BrowserType.LaunchOptions().setHeadless(headless)
         );
         context = browser.newContext();
 
@@ -37,10 +40,16 @@ public abstract class BaseTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown(TestInfo testInfo) {
         if (context != null) {
+            String testName = testInfo.getTestMethod()
+                    .map(java.lang.reflect.Method::getName)
+                    .orElse(testInfo.getDisplayName())
+                    .replaceAll("[^a-zA-Z0-9_-]", "_");
+            
+            new File("build/traces").mkdirs();
             context.tracing().stop(new Tracing.StopOptions()
-                    .setPath(Paths.get("build/trace.zip")));
+                    .setPath(Paths.get("build/traces/" + testName + ".zip")));
             context.close();
         }
         if (browser != null) {

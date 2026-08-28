@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew installPlaywright
 
       - name: Run Playwright Tests
-        run: ./gradlew test
+        run: ./gradlew test -Dheadless=true
 
       - name: Upload Test Report & Artifacts
         if: always()
@@ -36,5 +36,5 @@ jobs:
           name: test-results
           path: |
             build/reports/tests/test/
-            build/trace.zip
+            build/traces/
             build/screenshots/
