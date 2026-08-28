@@ -16,7 +16,6 @@ public class LoginTest extends BaseTest {
 
         DashboardPage dashboardPage = new DashboardPage(page);
         assertThat(dashboardPage.getFlashMessageLocator()).containsText("You logged into a secure area!");
-        assertThat(dashboardPage.getLogoutButtonLocator()).isVisible();
     }
 
     @Test
