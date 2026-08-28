@@ -1,17 +1,22 @@
 package org.example.pages;
 
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
 public class LoginPage {
     private final Page page;
 
-    private final String usernameInput = "#username";
-    private final String passwordInput = "#password";
-    private final String submitButton = "button[type='submit']";
-    private final String flashMessage = "#flash";
+    private final Locator usernameInput;
+    private final Locator passwordInput;
+    private final Locator submitButton;
+    private final Locator flashMessage;
 
     public LoginPage(Page page) {
         this.page = page;
+        this.usernameInput = page.locator("#username");
+        this.passwordInput = page.locator("#password");
+        this.submitButton = page.locator("button[type='submit']");
+        this.flashMessage = page.locator("#flash");
     }
 
     public void navigate() {
@@ -19,15 +24,15 @@ public class LoginPage {
     }
 
     public void enterUsername(String username) {
-        page.fill(usernameInput, username);
+        usernameInput.fill(username);
     }
 
     public void enterPassword(String password) {
-        page.fill(passwordInput, password);
+        passwordInput.fill(password);
     }
 
     public void clickLogin() {
-        page.click(submitButton);
+        submitButton.click();
     }
 
     public void login(String username, String password) {
@@ -36,7 +41,11 @@ public class LoginPage {
         clickLogin();
     }
 
+    public Locator getFlashMessageLocator() {
+        return flashMessage;
+    }
+
     public String getFlashMessage() {
-        return page.textContent(flashMessage).trim();
+        return flashMessage.textContent().trim();
     }
 }

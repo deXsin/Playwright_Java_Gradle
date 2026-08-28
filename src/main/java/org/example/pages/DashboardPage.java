@@ -1,31 +1,43 @@
 package org.example.pages;
 
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
 public class DashboardPage {
     private final Page page;
 
-    private final String header = "h2";
-    private final String flashMessage = "#flash";
-    private final String logoutButton = "a.button[href='/logout']";
+    private final Locator header;
+    private final Locator flashMessage;
+    private final Locator logoutButton;
 
     public DashboardPage(Page page) {
         this.page = page;
+        this.header = page.locator("h2");
+        this.flashMessage = page.locator("#flash");
+        this.logoutButton = page.locator("a.button[href='/logout']");
+    }
+
+    public Locator getLogoutButtonLocator() {
+        return logoutButton;
+    }
+
+    public Locator getFlashMessageLocator() {
+        return flashMessage;
     }
 
     public String getHeaderText() {
-        return page.textContent(header).trim();
+        return header.textContent().trim();
     }
 
     public String getFlashMessage() {
-        return page.textContent(flashMessage).trim();
+        return flashMessage.textContent().trim();
     }
 
     public boolean isLogoutButtonVisible() {
-        return page.isVisible(logoutButton);
+        return logoutButton.isVisible();
     }
 
     public void clickLogout() {
-        page.click(logoutButton);
+        logoutButton.click();
     }
 }

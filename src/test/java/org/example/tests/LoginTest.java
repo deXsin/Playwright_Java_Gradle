@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.example.pages.DashboardPage;
 import org.example.pages.LoginPage;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class LoginTest extends BaseTest {
 
@@ -15,8 +15,8 @@ public class LoginTest extends BaseTest {
         loginPage.login("tomsmith", "SuperSecretPassword!");
 
         DashboardPage dashboardPage = new DashboardPage(page);
-        assertTrue(dashboardPage.getFlashMessage().contains("You logged into a secure area!"));
-        assertTrue(dashboardPage.isLogoutButtonVisible());
+        assertThat(dashboardPage.getFlashMessageLocator()).containsText("You logged into a secure area!");
+        assertThat(dashboardPage.getLogoutButtonLocator()).isVisible();
     }
 
     @Test
@@ -25,6 +25,6 @@ public class LoginTest extends BaseTest {
         loginPage.navigate();
         loginPage.login("usuarioInvalido", "PasswordInvalida");
 
-        assertTrue(loginPage.getFlashMessage().contains("Your username is invalid!"));
+        assertThat(loginPage.getFlashMessageLocator()).containsText("Your username is invalid!");
     }
 }
