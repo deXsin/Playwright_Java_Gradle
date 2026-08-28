@@ -1,0 +1,47 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'com.microsoft.playwright:playwright:1.45.0'
+}
+
+test {
+    useJUnitPlatform()
+    doFirst {
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+            classpath = files(classpath.files.collect { f ->
+                if (!f.exists()) return f
+                try {
+                    def p = java.nio.file.Paths.get(f.toURI())
+                    def process = ["cmd", "/c", "for %I in (\"" + f.absolutePath + "\") do @echo %~sFI"].execute()
+                    def shortPath = process.text.trim()
+                    return (shortPath && !shortPath.startsWith("File Not Found")) ? new File(shortPath) : f
+                } catch (Exception e) {
+                    return f
+                }
+            })
+        }
+    }
+}
+
+tasks.register('installPlaywright') {
+    doLast {
+        javaexec {
+            classpath = configurations.testRuntimeClasspath
+            mainClass = 'com.microsoft.playwright.CLI'
+            args 'install'
+        }
+    }
+}
