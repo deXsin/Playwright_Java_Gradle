@@ -9,14 +9,17 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.io.File;
 import java.nio.file.Paths;
 
+// Clase base para tests: gestiona ciclo de vida de Playwright y captura de fallos
 @ExtendWith(ScreenshotOnFailureExtension.class)
 public abstract class BaseTest {
 
+    // Instancias principales de Playwright
     protected Playwright playwright;
     protected Browser browser;
     protected BrowserContext context;
     protected Page page;
 
+    // Se ejecuta antes de cada test: inicia navegador, contexto, tracing y página
     @BeforeEach
     public void setUp() {
         playwright = Playwright.create();
@@ -26,7 +29,7 @@ public abstract class BaseTest {
         );
         context = browser.newContext();
 
-        // Configurar Tracing (Etapa 4)
+        // Inicia la grabación del trace (capturas, snapshots y código fuente)
         context.tracing().start(new Tracing.StartOptions()
                 .setScreenshots(true)
                 .setSnapshots(true)
@@ -35,10 +38,12 @@ public abstract class BaseTest {
         page = context.newPage();
     }
 
+    // Permite acceder a la página actual (usado por extensiones)
     public Page getPage() {
         return page;
     }
 
+    // Se ejecuta después de cada test: guarda el trace y cierra recursos
     @AfterEach
     public void tearDown(TestInfo testInfo) {
         if (context != null) {
@@ -47,6 +52,7 @@ public abstract class BaseTest {
                     .orElse(testInfo.getDisplayName())
                     .replaceAll("[^a-zA-Z0-9_-]", "_");
             
+            // Guarda el archivo ZIP del trace para depuración
             new File("build/traces").mkdirs();
             context.tracing().stop(new Tracing.StopOptions()
                     .setPath(Paths.get("build/traces/" + testName + ".zip")));
