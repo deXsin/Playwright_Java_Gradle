@@ -19,6 +19,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    systemProperties System.getProperties()
     doFirst {
         if (System.getProperty("os.name").toLowerCase().contains("win")) {
             classpath = files(classpath.files.collect { f ->
