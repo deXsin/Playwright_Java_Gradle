@@ -26,6 +26,9 @@ jobs:
       - name: Install Playwright Browsers
         run: ./gradlew installPlaywright
 
+      - name: Install OS Dependencies for Browsers
+        run: npx playwright install-deps
+
       - name: Run Playwright Tests
         run: ./gradlew test -Dheadless=true
 
